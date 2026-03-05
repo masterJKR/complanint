@@ -1,0 +1,46 @@
+package com.complanint.control;
+
+import com.complanint.Dto.UserDto;
+import com.complanint.Entity.User;
+import com.complanint.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+@Controller
+public class UserController {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // 암호화 객체
+
+    @Autowired
+    private UserService userService; // 회원 관련 작업클래스
+
+    // 회원가입 작성 데이터 처리(가입-저장) 요청
+    @PostMapping("/signUp")
+    public String signUp(@Valid UserDto userDto,
+               BindingResult bindingResult, Model model){
+        // 유효성 검사 실패 :  검사를 통과 못함
+        if( bindingResult.hasErrors()){
+            return "member/signUp";
+            // 유효하지 않은 값이 있으니 다시 회원 가입 페이지 돌려보내기
+        }
+
+        // 회원가입 데이터 저장 실행
+        userService.save(userDto, passwordEncoder);
+
+        return "redirect:/"; // 회원가입 저장되면 첫페이지 이동
+    }
+
+    @GetMapping("/signUp")
+    public String signUp( Model model   ){   // 회원가입 페이지 요청
+        model.addAttribute("userDto",new UserDto());
+
+        return "member/signUp";
+    }
+}
