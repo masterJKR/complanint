@@ -5,6 +5,11 @@
 
 <mapper namespace="com.complanint.repository.UserRepo">
 
+    <select id="findById" parameterType="string"
+            resultType="com.complanint.Entity.User">
+        select * from user2 where userId=#{userId}
+    </select>
+
     <insert id="save" parameterType="com.complanint.Entity.User">
         insert into user2( userId, name, email, password, tel, role)
           values(#{userId}, #{name}, #{email}, #{password}, #{tel},

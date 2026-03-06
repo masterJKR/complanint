@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <header th:fragment="header"
         class="w-full sticky top-0 z-50 shadow bg-white">
@@ -11,10 +12,10 @@
                          bg-cover bg-center bg-no-repeat
                          block w-full h-[50px]"></a>
             </div>
-            <ul class="flex gap-8 text-lg font-bold items-center
+            <ul class="flex justify-around w-full text-lg font-bold items-center
                         text-gray-700">
                 <li>
-                    <a th:href="@{/}"
+                    <a th:href="@{/write}"
                        class="relative pb-2 hover:text-blue-600
                                 transition group">
                         민원신청
@@ -53,6 +54,16 @@
                         duration-300 group-hover:w-full"></span>
                     </a>
                 </li>
+                <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                    <a th:href="@{/}"
+                       class="relative pb-2 hover:text-blue-600
+                                transition group">
+                        담당자 배정
+                        <span class="absolute left-0 bottom-0
+                        w-0 h-[2px] bg-blue-600 transition-all
+                        duration-300 group-hover:w-full"></span>
+                    </a>
+                </li>
             </ul>
 
         </nav>
@@ -82,7 +93,13 @@
          px-3 py-2 flex items-center gap-2
          translate-x-[140%] opacity-100 pointer-events-none
          transition-all duration-300">
-            <div th:if="${session.loginMember == null}" class="flex items-center gap-2">
+            <div sec:authorize="isAuthenticated()"
+            class="flex items-center justify-between px-[10px] gap-3">
+                <span sec:authentication="name" class="block"></span>
+                <a th:href="@{/logout}">로그아웃</a>
+
+            </div>
+            <div sec:authorize="isAnonymous()" class="flex items-center gap-2">
 
                 <a th:href="@{/signIn}"
                    class="px-4 py-2 rounded-full border border-blue-600 text-blue-600

@@ -4,8 +4,16 @@
       layout:decorate="~{layout/default}">
 
 <div layout:fragment="main">
+    <script>
+        var msg = "[[${errorMsg}]]"
+        if( msg != "" ) alert(msg);
+
+    </script>
+
     <div class="w-[400px] mx-auto py-[50px]">
         <form th:object="${userDto}" method="post" th:action="@{/signUp}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" >
+
             아이디 : <input type="text" th:field="*{userId}"> <br>
             <p class="text-[10px] text-red-600" th:if="${ #fields.hasErrors('userId')}"  th:errors="*{userId}"></p>
 

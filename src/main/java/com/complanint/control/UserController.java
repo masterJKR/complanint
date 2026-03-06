@@ -1,5 +1,6 @@
 package com.complanint.control;
 
+import com.complanint.Dto.LoginDto;
 import com.complanint.Dto.UserDto;
 import com.complanint.Entity.User;
 import com.complanint.service.UserService;
@@ -21,6 +22,22 @@ public class UserController {
     @Autowired
     private UserService userService; // 회원 관련 작업클래스
 
+    //로그인 실패시 제공페이지
+    @GetMapping("/signIn/error")
+    public String loginFail(Model model) {
+        model.addAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
+        return "member/signIn";
+    }
+
+    
+    // 로그인 페이지 요청
+    @GetMapping("/signIn")
+    public String signIn( Model model) {
+        model.addAttribute("loginDto" , new LoginDto());
+        return "member/signIn";
+    }
+
+
     // 회원가입 작성 데이터 처리(가입-저장) 요청
     @PostMapping("/signUp")
     public String signUp(@Valid UserDto userDto,
@@ -32,7 +49,12 @@ public class UserController {
         }
 
         // 회원가입 데이터 저장 실행
-        userService.save(userDto, passwordEncoder);
+        try {
+            userService.save(userDto, passwordEncoder);
+        }catch(IllegalStateException e){ // 아이디 중복체크시 중복이면 예외 발생
+            model.addAttribute("errorMsg", e.getMessage());
+            return "member/signUp";
+        }
 
         return "redirect:/"; // 회원가입 저장되면 첫페이지 이동
     }

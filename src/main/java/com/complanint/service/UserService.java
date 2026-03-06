@@ -5,11 +5,14 @@ import com.complanint.Entity.User;
 import com.complanint.repository.UserRepo;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepo userRepo;
@@ -20,6 +23,35 @@ public class UserService {
         //  Repository를 통해  Entity객체의 값 테이블에 저장
 
         User user = User.from(userDto, passwordEncoder);
+        
+        validId(user); // 테이블에 저장하기 전에 아이디 중복체크
         userRepo.save(user);
     }
+
+    // 아이디 중복체크 메서드
+    private void validId(User user){
+        User find = userRepo.findById( user.getUserId() );
+        if( find != null ){
+            throw new IllegalStateException("아이디가 중복입니다.");
+        }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException{
+
+        User user = userRepo.findById(username);
+
+        if( user == null ){
+            throw new UsernameNotFoundException(username);
+        }
+        return org.springframework.security.core.userdetails.User
+                .builder().username(user.getUserId())
+                .password(user.getPassword())
+                .roles(user.getRole())
+                .build();
+    }
+
+
+
 }
