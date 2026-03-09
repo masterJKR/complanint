@@ -4,6 +4,15 @@
 
 <mapper namespace="com.complanint.repository.ComplainRepo">
 
+    <select id="findByUserName" parameterType="string"
+            resultType="com.complanint.Entity.Complain">
+
+        select c.* from complain c join user2 u
+        on c.user_id = u.id where u.userId = #{username}
+        order by c.id desc;
+
+    </select>
+
     <select id="find"
         resultType="com.complanint.Entity.Complain">
 
